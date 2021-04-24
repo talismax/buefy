@@ -1,12 +1,17 @@
 {
   "presets": [
-    ["env", { "modules": false }],
-    "stage-2"
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+      }
+    ],
+    "@vue/babel-preset-jsx"
   ],
-  "plugins": ["transform-runtime"],
+  "plugins": ["@babel/plugin-transform-runtime"],
   "env": {
     "test": {
-      "presets": ["env", "stage-2"]
+      "presets": ["@babel/preset-env"]
     }
   }
 }
