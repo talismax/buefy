@@ -3,10 +3,9 @@
     [
       "@babel/preset-env",
       {
-        "modules": false,
+        "modules": "auto",
       }
-    ],
-    "@vue/babel-preset-jsx"
+    ]
   ],
   "plugins": ["@babel/plugin-transform-runtime"],
   "env": {
