@@ -18,7 +18,7 @@
                 >
                     <b-slot-component
                         ref="tabLink"
-                        v-if="childItem.$scopedSlots.header"
+                        v-if="childItem.$scopedSlots && childItem.$scopedSlots.header"
                         :component="childItem"
                         name="header"
                         tag="a"
@@ -27,8 +27,8 @@
                         :aria-controls="`${childItem.value}-content`"
                         :aria-selected="`${childItem.isActive}`"
                         :tabindex="childItem.isActive ? 0 : -1"
-                        @focus.native="currentFocus = childIdx"
-                        @click.native="childClick(childItem)"
+                        @focus="currentFocus = childIdx"
+                        @click="childClick(childItem)"
                         @keydown="manageTabKeydown($event, childItem)"
                     />
                     <a
@@ -47,14 +47,15 @@
                             v-if="childItem.icon"
                             :icon="childItem.icon"
                             :pack="childItem.iconPack"
-                            :size="size"/>
+                            :size="size"
+                        />
                         <span>{{ childItem.label }}</span>
                     </a>
                 </li>
             </ul>
         </nav>
         <section class="tab-content" :class="{'is-transitioning': isTransitioning}">
-            <slot/>
+            <slot />
         </section>
     </div>
 </template>
