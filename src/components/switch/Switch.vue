@@ -3,28 +3,31 @@
         class="switch"
         :class="newClass"
         ref="label"
-        :disabled="disabled"
+        :disabled="disabledOrUndefined"
         @click="focus"
         @keydown.prevent.enter="$refs.label.click()"
         @mousedown="isMouseDown = true"
         @mouseup="isMouseDown = false"
         @mouseout="isMouseDown = false"
-        @blur="isMouseDown = false">
+        @blur="isMouseDown = false"
+    >
         <input
             v-model="computedValue"
             type="checkbox"
             ref="input"
             @click.stop
-            :disabled="disabled"
+            :disabled="disabledOrUndefined"
             :name="name"
             :required="required"
             :value="nativeValue"
             :true-value="trueValue"
-            :false-value="falseValue">
+            :false-value="falseValue"
+        >
         <span
             class="check"
-            :class="checkClasses"/>
-        <span class="control-label"><slot/></span>
+            :class="checkClasses"
+        />
+        <span class="control-label"><slot /></span>
     </label>
 </template>
 
@@ -34,7 +37,7 @@ import config from '../../utils/config'
 export default {
     name: 'BSwitch',
     props: {
-        value: [String, Number, Boolean, Function, Object, Array, Date],
+        modelValue: [String, Number, Boolean, Function, Object, Array, Date],
         nativeValue: [String, Number, Boolean, Function, Object, Array, Date],
         disabled: Boolean,
         type: String,
@@ -67,7 +70,7 @@ export default {
     },
     data() {
         return {
-            newValue: this.value,
+            newValue: this.modelValue,
             isMouseDown: false
         }
     },
@@ -78,7 +81,7 @@ export default {
             },
             set(value) {
                 this.newValue = value
-                this.$emit('input', value)
+                this.$emit('update:modelValue', value)
             }
         },
         newClass() {
@@ -98,13 +101,19 @@ export default {
                 (this.passiveType && `${this.passiveType}-passive`),
                 this.type
             ]
+        },
+        disabledOrUndefined() {
+            // On Vue 3, setting boolean attribute `false` does not remove it.
+            // To do so, `null` or `undefined` has to be specified instead.
+            // Setting `disabled="false"` ends up with a grayed out switch.
+            return this.disabled || undefined
         }
     },
     watch: {
         /**
         * When v-model change, set internal value.
         */
-        value(value) {
+        modelValue(value) {
             this.newValue = value
         }
     },
