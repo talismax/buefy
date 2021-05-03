@@ -16,7 +16,8 @@
             @input="onInput"
             @change="onChange"
             @blur="onBlur"
-            @focus="onFocus">
+            @focus="onFocus"
+        >
 
         <textarea
             v-else
@@ -29,7 +30,8 @@
             @input="onInput"
             @change="onChange"
             @blur="onBlur"
-            @focus="onFocus"/>
+            @focus="onFocus"
+        />
 
         <b-icon
             v-if="icon"
@@ -38,7 +40,8 @@
             :icon="icon"
             :pack="iconPack"
             :size="iconSize"
-            @click.native="iconClick('icon-click', $event)"/>
+            @click="iconClick('icon-click', $event)"
+        />
 
         <b-icon
             v-if="!loading && hasIconRight"
@@ -49,12 +52,14 @@
             :size="iconSize"
             :type="rightIconType"
             both
-            @click.native="rightIconClick"/>
+            @click="rightIconClick"
+        />
 
         <small
             v-if="maxlength && hasCounter && type !== 'number'"
             class="help counter"
-            :class="{ 'is-invisible': !isFocused }">
+            :class="{ 'is-invisible': !isFocused }"
+        >
             {{ valueLength }} / {{ maxlength }}
         </small>
     </div>
@@ -73,7 +78,7 @@ export default {
     mixins: [FormElementMixin],
     inheritAttrs: false,
     props: {
-        value: [Number, String],
+        modelValue: [Number, String],
         type: {
             type: String,
             default: 'text'
@@ -98,7 +103,7 @@ export default {
     },
     data() {
         return {
-            newValue: this.value,
+            newValue: this.modelValue,
             newType: this.type,
             newAutocomplete: this.autocomplete || config.defaultInputAutocomplete,
             isPasswordVisible: false,
@@ -114,7 +119,7 @@ export default {
             },
             set(value) {
                 this.newValue = value
-                this.$emit('input', value)
+                this.$emit('update:modelValue', value)
             }
         },
         rootClasses() {
@@ -182,6 +187,7 @@ export default {
                 case 'is-danger': return 'alert-circle'
                 case 'is-info': return 'information'
                 case 'is-warning': return 'alert'
+                default: return undefined
             }
         },
 
@@ -215,7 +221,7 @@ export default {
         * When v-model is changed:
         *   1. Set internal value.
         */
-        value(value) {
+        modelValue(value) {
             this.newValue = value
         }
     },
