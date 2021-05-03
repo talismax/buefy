@@ -3,23 +3,25 @@
         class="b-checkbox checkbox"
         :class="[size, { 'is-disabled': disabled }]"
         ref="label"
-        :disabled="disabled"
+        :disabled="disabledOrUndefined"
         @click="focus"
-        @keydown.prevent.enter="$refs.label.click()">
+        @keydown.prevent.enter="$refs.label.click()"
+    >
         <input
             v-model="computedValue"
             :indeterminate.prop="indeterminate"
             type="checkbox"
             ref="input"
             @click.stop
-            :disabled="disabled"
+            :disabled="disabledOrUndefined"
             :required="required"
             :name="name"
             :value="nativeValue"
             :true-value="trueValue"
-            :false-value="falseValue">
+            :false-value="falseValue"
+        >
         <span class="check" :class="type" />
-        <span class="control-label"><slot/></span>
+        <span class="control-label"><slot /></span>
     </label>
 </template>
 
