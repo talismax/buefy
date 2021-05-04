@@ -3,13 +3,14 @@
         :is="tag"
         role="button"
         :href="href"
-        :disabled="isDisabled"
+        :disabled="disabledOrUndefined"
         class="pagination-link"
         :class="{ 'is-current': page.isCurrent, [page.class]: true }"
         v-bind="$attrs"
         @click.prevent="page.click"
         :aria-label="page['aria-label']"
-        :aria-current="page.isCurrent">
+        :aria-current="page.isCurrent"
+    >
         <slot>{{ page.number }}</slot>
     </component>
 </template>
@@ -40,10 +41,15 @@ export default {
         href() {
             if (this.tag === 'a') {
                 return '#'
+            } else {
+                return undefined
             }
         },
         isDisabled() {
             return this.disabled || this.page.disabled
+        },
+        disabledOrUndefined() {
+            return this.isDisabled || undefined
         }
     }
 }
