@@ -95,7 +95,6 @@ export default {
 
             // Timeout for the animation complete before destroying
             setTimeout(() => {
-                this.$destroy()
                 removeElement(this.$el)
             }, 150)
         },
