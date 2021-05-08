@@ -76,7 +76,7 @@ export default {
             }
         },
         hasDefaultSlot() {
-            return !!this.$scopedSlots.default
+            return !!this.$slots.default
         },
         /**
          * Return if column header is un-selectable
@@ -105,10 +105,12 @@ export default {
     },
     created() {
         if (!this.$table) {
-            this.$destroy()
             throw new Error('You should wrap bTableColumn on a bTable')
         }
-        this.$table.refreshSlots()
+        this.$table._registerTableColumn(this)
+    },
+    beforeUnmount() {
+        this.$table._unregisterTableColumn(this)
     },
     render(createElement) {
         // renderless

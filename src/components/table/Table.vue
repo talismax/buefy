@@ -61,7 +61,7 @@
                         >
                             <template v-if="headerCheckable">
                                 <b-checkbox
-                                    :value="isAllChecked"
+                                    :model-value="isAllChecked"
                                     :disabled="isAllUncheckable"
                                     @change="checkAll"
                                 />
@@ -90,7 +90,7 @@
                                     'is-centered': column.centered
                                 }"
                             >
-                                <template v-if="column.$scopedSlots && column.$scopedSlots.header">
+                                <template v-if="column.$slots.header">
                                     <b-slot-component
                                         :component="column"
                                         scoped
@@ -149,7 +149,7 @@
                         >
                             <template v-if="headerCheckable">
                                 <b-checkbox
-                                    :value="isAllChecked"
+                                    :model-value="isAllChecked"
                                     :disabled="isAllUncheckable"
                                     @change="checkAll"
                                 />
@@ -172,7 +172,7 @@
                                 }"
                             >
                                 <template
-                                    v-if="column.$scopedSlots && column.$scopedSlots.subheading"
+                                    v-if="column.$slots.subheading"
                                 >
                                     <b-slot-component
                                         :component="column"
@@ -202,8 +202,7 @@
                             <div class="th-wrap">
                                 <template v-if="column.searchable">
                                     <template
-                                        v-if="column.$scopedSlots
-                                            && column.$scopedSlots.searchable"
+                                        v-if="column.$slots.searchable"
                                     >
                                         <b-slot-component
                                             :component="column"
@@ -271,7 +270,7 @@
                             >
                                 <b-checkbox
                                     :disabled="!isRowCheckable(row)"
-                                    :value="isRowChecked(row)"
+                                    :model-value="isRowChecked(row)"
                                     @click.prevent.stop="checkRow(row, index, $event)"
                                 />
                             </td>
@@ -280,7 +279,7 @@
                                 v-for="(column, colindex) in visibleColumns"
                                 :key="column.newKey + ':' + index + ':' + colindex"
                             >
-                                <template v-if="column.$scopedSlots && column.$scopedSlots.default">
+                                <template v-if="column.$slots.default">
                                     <b-slot-component
                                         :component="column"
                                         v-bind="column.tdAttrs(row, column)"
@@ -302,7 +301,7 @@
                             >
                                 <b-checkbox
                                     :disabled="!isRowCheckable(row)"
-                                    :value="isRowChecked(row)"
+                                    :model-value="isRowChecked(row)"
                                     @click.prevent.stop="checkRow(row, index, $event)"
                                 />
                             </td>
@@ -388,7 +387,7 @@
 </template>
 
 <script>
-import { getValueByPath, indexOf, multiColumnSort, escapeRegExpChars, toCssWidth } from '../../utils/helpers'
+import { getValueByPath, indexOf, multiColumnSort, escapeRegExpChars, toCssWidth, isFragment } from '../../utils/helpers'
 import debounce from '../../utils/debounce'
 import Checkbox from '../checkbox/Checkbox'
 import Icon from '../icon/Icon'
@@ -701,7 +700,7 @@ export default {
         hasCustomSubheadings() {
             if (this.$slots && this.$slots.subheading) return true
             return this.newColumns.some((column) => {
-                return column.subheading || (column.$scopedSlots && column.$scopedSlots.subheading)
+                return column.subheading || column.$slots.subheading
             })
         },
 
@@ -742,11 +741,6 @@ export default {
                 })
             }
             return this.defaultSlots
-                .filter((vnode) =>
-                    vnode.componentInstance &&
-                    vnode.componentInstance.$data &&
-                    vnode.componentInstance.$data._isTableColumn)
-                .map((vnode) => vnode.componentInstance)
         },
         canDragRow() {
             return this.draggable && !this.isDraggingColumn
@@ -1216,9 +1210,14 @@ export default {
         * Assumes that `$slots.footer` is specified.
         */
         hasCustomFooterSlot() {
-            if (this.$slots.footer().length > 1) return true
+            const footer = this.$slots.footer()
+            if (footer.length > 1) return true
 
-            const tag = this.$slots.footer()[0].tag
+            // if a template is specified to `footer`, `footer.length` is 1
+            // but should contain multiple elements.
+            if (isFragment(footer[0])) return true
+
+            const tag = footer[0].tag
             if (tag !== 'th' && tag !== 'td') return false
 
             return true
@@ -1391,12 +1390,19 @@ export default {
             this.$emit('columndragleave', { event, column, index })
         },
 
-        refreshSlots() {
-            this.defaultSlots = this.$slots.default || []
+        _registerTableColumn(column) {
+            if (column._isTableColumn) {
+                this.defaultSlots.push(column)
+            }
+        },
+        _unregisterTableColumn(column) {
+            const index = this.defaultSlots.indexOf(column)
+            if (index !== -1) {
+                this.defaultSlots.splice(index, 1)
+            }
         }
     },
     mounted() {
-        this.refreshSlots()
         this.checkPredefinedDetailedRows()
         this.checkSort()
     }
