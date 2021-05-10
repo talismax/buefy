@@ -14,12 +14,14 @@
             tabindex="-1"
             :role="ariaRole"
             :aria-label="ariaLabel"
-            :aria-modal="ariaModal">
-            <div class="modal-background" @click="cancel('outside')"/>
+            :aria-modal="ariaModal"
+        >
+            <div class="modal-background" @click="cancel('outside')" />
             <div
                 class="animation-content"
                 :class="{ 'modal-content': !hasModalCard }"
-                :style="customStyle">
+                :style="customStyle"
+            >
                 <component
                     v-if="component"
                     v-bind="props"
@@ -34,13 +36,15 @@
                 <slot
                     v-else
                     :can-cancel="canCancel"
-                    :close="close"/>
+                    :close="close"
+                />
                 <button
                     type="button"
                     v-if="showX"
                     v-show="!animating"
                     class="modal-close is-large"
-                    @click="cancel('x')"/>
+                    @click="cancel('x')"
+                />
             </div>
         </div>
     </transition>
@@ -83,7 +87,7 @@ export default {
                 return config.defaultModalCanCancel
             }
         },
-        onCancel: {
+        cancelCallback: {
             type: Function,
             default: () => {}
         },
@@ -213,17 +217,17 @@ export default {
         },
 
         /**
-        * Close the Modal if canCancel and call the onCancel prop (function).
+        * Close the Modal if canCancel and call the cancelCallback prop (function).
         */
         cancel(method) {
             if (this.cancelOptions.indexOf(method) < 0) return
             this.$emit('cancel', arguments)
-            this.onCancel.apply(null, arguments)
+            this.cancelCallback.apply(null, arguments)
             this.close()
         },
 
         /**
-        * Call the onCancel prop (function).
+        * Call the cancelCallback prop (function).
         * Emit events, and destroy modal if it's programmatic.
         */
         close() {
@@ -234,7 +238,6 @@ export default {
             if (this.programmatic) {
                 this.isActive = false
                 setTimeout(() => {
-                    this.$destroy()
                     removeElement(this.$el)
                 }, 150)
             }
@@ -286,7 +289,7 @@ export default {
         if (this.programmatic) this.isActive = true
         else if (this.isActive) this.handleScroll()
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (typeof window !== 'undefined') {
             document.removeEventListener('keyup', this.keyPress)
             // reset scroll
