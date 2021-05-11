@@ -15,13 +15,13 @@
             :autocomplete="newAutocomplete"
             :use-html5-validation="false"
             v-bind="$attrs"
-            @input="onInput"
+            @update:model-value="onInput"
             @focus="focused"
             @blur="onBlur"
-            @keyup.native.esc.prevent="isActive = false"
-            @keydown.native="keydown"
-            @keydown.native.up.prevent="keyArrows('up')"
-            @keydown.native.down.prevent="keyArrows('down')"
+            @keyup.esc.prevent="isActive = false"
+            @keydown="keydown"
+            @keydown.up.prevent="keyArrows('up')"
+            @keydown.down.prevent="keyArrows('down')"
             @icon-right-click="rightIconClick"
             @icon-click="(event) => $emit('icon-click', event)"
         />
@@ -37,7 +37,8 @@
                 <div
                     class="dropdown-content"
                     v-show="isActive"
-                    :style="contentStyle">
+                    :style="contentStyle"
+                >
                     <div v-if="hasHeaderSlot" class="dropdown-item">
                         <slot name="header" />
                     </div>
@@ -45,12 +46,14 @@
                         <div
                             v-if="element.group"
                             :key="groupindex + 'group'"
-                            class="dropdown-item">
+                            class="dropdown-item"
+                        >
                             <slot
                                 v-if="hasGroupSlot"
                                 name="group"
                                 :group="element.group"
-                                :index="groupindex" />
+                                :index="groupindex"
+                            />
                             <span class="has-text-weight-bold" v-else>
                                 {{ element.group }}
                             </span>
@@ -65,7 +68,8 @@
                             <slot
                                 v-if="hasDefaultSlot"
                                 :option="option"
-                                :index="index" />
+                                :index="index"
+                            />
                             <span v-else>
                                 {{ getValue(option, true) }}
                             </span>
@@ -73,7 +77,8 @@
                     </template>
                     <div
                         v-if="isEmpty && hasEmptySlot"
-                        class="dropdown-item is-disabled">
+                        class="dropdown-item is-disabled"
+                    >
                         <slot name="empty" />
                     </div>
                     <div v-if="hasFooterSlot" class="dropdown-item">
@@ -104,7 +109,7 @@ export default {
     mixins: [FormElementMixin],
     inheritAttrs: false,
     props: {
-        value: [Number, String],
+        modelValue: [Number, String],
         data: {
             type: Array,
             default: () => []
@@ -135,12 +140,22 @@ export default {
             default: () => ['Tab', 'Enter']
         }
     },
+    emits: [
+        'blur',
+        'focus',
+        'icon-click',
+        'icon-right-click',
+        'infinite-scroll',
+        'select',
+        'typing',
+        'update:modelValue'
+    ],
     data() {
         return {
             selected: null,
             hovered: null,
             isActive: false,
-            newValue: this.value,
+            newValue: this.modelValue,
             newAutocomplete: this.autocomplete || 'off',
             isListInViewportVertically: true,
             hasFocus: false,
@@ -213,14 +228,14 @@ export default {
          * Check if exists default slot
          */
         hasDefaultSlot() {
-            return !!this.$scopedSlots.default
+            return !!this.$slots.default
         },
 
         /**
          * Check if exists group slot
          */
         hasGroupSlot() {
-            return !!this.$scopedSlots.group
+            return !!this.$slots.group
         },
 
         /**
@@ -299,7 +314,7 @@ export default {
          *   3. Close dropdown if value is clear or else open it
          */
         newValue(value) {
-            this.$emit('input', value)
+            this.$emit('update:modelValue', value)
             // Check if selected is invalid
             const currentValue = this.getValue(this.selected)
             if (currentValue && currentValue !== value) {
@@ -316,7 +331,7 @@ export default {
          *   1. Update internal value.
          *   2. If it's invalid, validate again.
          */
-        value(value) {
+        modelValue(value) {
             this.newValue = value
         },
 
@@ -554,7 +569,7 @@ export default {
                 }
                 const rect = trigger.getBoundingClientRect()
                 let top = rect.top + window.scrollY
-                let left = rect.left + window.scrollX
+                const left = rect.left + window.scrollX
                 if (!this.isOpenedTop) {
                     top += trigger.clientHeight
                 } else {
@@ -589,7 +604,7 @@ export default {
             this.updateAppendToBody()
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (typeof window !== 'undefined') {
             document.removeEventListener('click', this.clickedOutside)
             if (this.dropdownPosition === 'auto') { window.removeEventListener('resize', this.calcDropdownInViewportVertical) }
