@@ -1,4 +1,4 @@
-import { Fragment } from 'vue'
+import { Comment, Fragment, Static, Text } from 'vue'
 
 /**
  * +/- function to native math sign
@@ -295,4 +295,11 @@ export const isDefined = (d) => d !== undefined
 
 export function isFragment(vnode) {
     return vnode.type === Fragment
+}
+
+// TODO: replacement of vnode.tag test
+export function isTag(vnode) {
+    return vnode.type !== Comment &&
+        vnode.type !== Text &&
+        vnode.type !== Static
 }

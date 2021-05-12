@@ -14,7 +14,7 @@
             ref="input"
             @click.stop
             :disabled="disabledOrUndefined"
-            :required="required"
+            :required="requiredOrUndefined"
             :name="name"
             :value="nativeValue"
             :true-value="trueValue"
