@@ -96,7 +96,7 @@ export default {
     mixins: [FormElementMixin],
     inheritAttrs: false,
     props: {
-        value: Date,
+        modelValue: Date,
         inline: Boolean,
         minTime: Date,
         maxTime: Date,
@@ -175,9 +175,10 @@ export default {
             default: false
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
-            dateSelected: this.value,
+            dateSelected: this.modelValue,
             hoursSelected: null,
             minutesSelected: null,
             secondsSelected: null,
@@ -196,7 +197,7 @@ export default {
             },
             set(value) {
                 this.dateSelected = value
-                this.$emit('input', this.dateSelected)
+                this.$emit('update:modelValue', this.dateSelected)
             }
         },
         localeOptions() {
@@ -218,7 +219,7 @@ export default {
             return this.hourFormat || (this.localeOptions.hour12 ? HOUR_FORMAT_12 : HOUR_FORMAT_24)
         },
         sampleTime() {
-            let d = this.timeCreator()
+            const d = this.timeCreator()
             d.setHours(10)
             d.setSeconds(0)
             d.setMinutes(0)
@@ -227,7 +228,7 @@ export default {
         },
         hourLiteral() {
             if (this.dtf.formatToParts && typeof this.dtf.formatToParts === 'function') {
-                let d = this.sampleTime
+                const d = this.sampleTime
                 const parts = this.dtf.formatToParts(d)
                 const literal = parts.find((part, idx) => (idx > 0 && parts[idx - 1].type === 'hour'))
                 if (literal) {
@@ -238,7 +239,7 @@ export default {
         },
         minuteLiteral() {
             if (this.dtf.formatToParts && typeof this.dtf.formatToParts === 'function') {
-                let d = this.sampleTime
+                const d = this.sampleTime
                 const parts = this.dtf.formatToParts(d)
                 const literal = parts.find((part, idx) => (idx > 0 && parts[idx - 1].type === 'minute'))
                 if (literal) {
@@ -249,7 +250,7 @@ export default {
         },
         secondLiteral() {
             if (this.dtf.formatToParts && typeof this.dtf.formatToParts === 'function') {
-                let d = this.sampleTime
+                const d = this.sampleTime
                 const parts = this.dtf.formatToParts(d)
                 const literal = parts.find((part, idx) => (idx > 0 && parts[idx - 1].type === 'second'))
                 if (literal) {
@@ -259,7 +260,7 @@ export default {
         },
         amString() {
             if (this.dtf.formatToParts && typeof this.dtf.formatToParts === 'function') {
-                let d = this.sampleTime
+                const d = this.sampleTime
                 d.setHours(10)
                 const dayPeriod = this.dtf.formatToParts(d).find((part) => part.type === 'dayPeriod')
                 if (dayPeriod) {
@@ -270,7 +271,7 @@ export default {
         },
         pmString() {
             if (this.dtf.formatToParts && typeof this.dtf.formatToParts === 'function') {
-                let d = this.sampleTime
+                const d = this.sampleTime
                 d.setHours(20)
                 const dayPeriod = this.dtf.formatToParts(d).find((part) => part.type === 'dayPeriod')
                 if (dayPeriod) {
@@ -343,6 +344,10 @@ export default {
 
         isHourFormat24() {
             return this.newHourFormat === HOUR_FORMAT_24
+        },
+
+        disabledOrUndefined() {
+            return this.disabled || undefined
         }
     },
     watch: {
@@ -356,7 +361,7 @@ export default {
          *   1. Update internal value.
          *   2. If it's invalid, validate again.
          */
-        value: {
+        modelValue: {
             handler(value) {
                 this.updateInternalState(value)
                 !this.isValid && this.$refs.input.checkHtml5Validity()
@@ -704,7 +709,7 @@ export default {
             document.addEventListener('keyup', this.keyPress)
         }
     },
-    beforeDestroy() {
+    beforeUnmounted() {
         if (typeof window !== 'undefined') {
             document.removeEventListener('keyup', this.keyPress)
         }
