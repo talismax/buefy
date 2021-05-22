@@ -13,7 +13,7 @@
                 type="button"
                 class="button"
                 :class="buttonClasses"
-                :disabled="isDisabled(control)"
+                :disabled="isDisabled(control) || undefined"
                 :aria-label="control === 'plus' ? ariaPlusLabel : ariaMinusLabel"
                 @mousedown="
                     !isDisabled(control) && onStartLongPress($event, control === 'plus')
@@ -29,7 +29,8 @@
                     both
                     :icon="control"
                     :pack="iconPack"
-                    :size="iconSize" />
+                    :size="iconSize"
+                />
             </button>
         </p>
         <b-input
@@ -41,7 +42,7 @@
             :max="max"
             :min="min"
             :size="size"
-            :disabled="disabled"
+            :disabled="disabledOrUndefined"
             :readonly="!editable"
             :loading="loading"
             :rounded="rounded"
@@ -68,7 +69,7 @@
                 type="button"
                 class="button"
                 :class="buttonClasses"
-                :disabled="isDisabled(control)"
+                :disabled="isDisabled(control) || undefined"
                 :aria-label="control === 'plus' ? ariaPlusLabel : ariaMinusLabel"
                 @mousedown="
                     !isDisabled(control) && onStartLongPress($event, control === 'plus')
@@ -84,7 +85,8 @@
                     both
                     :icon="control"
                     :pack="iconPack"
-                    :size="iconSize" />
+                    :size="iconSize"
+                />
             </button>
         </p>
     </div>
@@ -104,7 +106,7 @@ export default {
     mixins: [FormElementMixin],
     inheritAttrs: false,
     props: {
-        value: Number,
+        modelValue: Number,
         min: {
             type: [Number, String]
         },
@@ -145,9 +147,10 @@ export default {
         ariaMinusLabel: String,
         ariaPlusLabel: String
     },
+    emits: ['blur', 'focus', 'update:modelValue'],
     data() {
         return {
-            newValue: this.value,
+            newValue: this.modelValue,
             newStep: this.step || 1,
             newMinStep: this.minStep,
             timesPressed: 1,
@@ -170,7 +173,7 @@ export default {
                 }
                 this.newValue = newValue
                 if (!isNaN(newValue) && newValue !== null && newValue !== '-0') {
-                    this.$emit('input', Number(newValue))
+                    this.$emit('update:modelValue', Number(newValue))
                 }
                 !this.isValid && this.$refs.input.checkHtml5Validity()
             }
@@ -223,6 +226,12 @@ export default {
                 return step.substring(index + 1).length
             }
             return 0
+        },
+
+        disabledOrUndefined() {
+            // On Vue 3, setting a boolean attribute `false` does not remove it,
+            // `null` or `undefined` has to be given to remove it.
+            return this.disabled || undefined
         }
     },
     watch: {
@@ -230,7 +239,7 @@ export default {
      * When v-model is changed:
      *   1. Set internal value.
      */
-        value: {
+        modelValue: {
             immediate: true,
             handler(value) {
                 this.newValue = value
