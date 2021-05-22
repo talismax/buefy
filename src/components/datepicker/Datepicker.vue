@@ -50,7 +50,7 @@
             >
                 <div>
                     <header class="datepicker-header">
-                        <template v-if="$slots.header !== undefined && $slots.header().length">
+                        <template v-if="$slots.header !== undefined">
                             <slot name="header" />
                         </template>
                         <div
@@ -190,7 +190,7 @@
                 </div>
 
                 <footer
-                    v-if="$slots.default !== undefined && $slots.default().length"
+                    v-if="$slots.default !== undefined"
                     class="datepicker-footer"
                     :class="{'footer-horizontal-timepicker': horizontalTimePicker}"
                 >
