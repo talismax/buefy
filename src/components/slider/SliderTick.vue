@@ -2,9 +2,10 @@
     <div
         class="b-slider-tick"
         :class="{ 'is-tick-hidden': hidden }"
-        :style="getTickStyle(position)">
+        :style="getTickStyle(position)"
+    >
         <span v-if="$slots.default" class="b-slider-tick-label">
-            <slot/>
+            <slot />
         </span>
     </div>
 </template>
@@ -30,12 +31,11 @@ export default {
     },
     methods: {
         getTickStyle(position) {
-            return { 'left': position + '%' }
+            return { left: position + '%' }
         }
     },
     created() {
         if (!this.$parent.$data._isSlider) {
-            this.$destroy()
             throw new Error('You should wrap bSliderTick on a bSlider')
         }
     }
