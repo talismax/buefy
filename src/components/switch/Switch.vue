@@ -68,6 +68,7 @@ export default {
             default: false
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
             newValue: this.modelValue,
