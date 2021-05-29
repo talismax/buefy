@@ -96,6 +96,7 @@ export default {
             default: false
         }
     },
+    emits: ['load', 'error'],
     data() {
         return {
             clientWidth: 0,
@@ -111,7 +112,7 @@ export default {
     },
     computed: {
         ratioPattern() {
-            return new RegExp(/([0-9]+)by([0-9]+)/)
+            return /([0-9]+)by([0-9]+)/
         },
         hasRatio() {
             return this.ratio && this.ratioPattern.test(this.ratio)
@@ -133,6 +134,7 @@ export default {
                     paddingTop: `${(ratioValues[2] / ratioValues[1]) * 100}%`
                 }
             }
+            return undefined
         },
         imgClasses() {
             return {
@@ -163,11 +165,13 @@ export default {
             if (this.responsive && this.clientWidth > 0) {
                 return this.clientWidth
             }
+            return undefined
         },
         computedNativeLazy() {
             if (this.lazy && this.useNativeLazy) {
                 return 'lazy'
             }
+            return undefined
         },
         isDisplayed() {
             return (
@@ -179,11 +183,13 @@ export default {
             if (this.placeholder) {
                 return this.getExt(this.placeholder)
             }
+            return undefined
         },
         isPlaceholderWepb() {
             if (this.placeholder) {
                 return this.placeholderExt === 'webp'
             }
+            return false
         },
         computedPlaceholder() {
             if (!this.webpSupported && this.isPlaceholderWepb && this.webpFallback && this.webpFallback.startsWith('.')) {
@@ -216,11 +222,13 @@ export default {
                     return `${this.srcsetFormatter(this.computedSrc, size, this)} ${size}w`
                 }).join(',')
             }
+            return undefined
         },
         computedSizes() {
             if (this.computedSrcset && this.computedWidth) {
                 return `${this.computedWidth}px`
             }
+            return undefined
         },
         isCaptionFirst() {
             return this.$slots.caption && this.captionFirst
@@ -275,7 +283,7 @@ export default {
             const intersectionObserverSupported = typeof window !== 'undefined' && 'IntersectionObserver' in window
             if (!nativeLazySupported && intersectionObserverSupported) {
                 this.observer = new IntersectionObserver((events) => {
-                    const {target, isIntersecting} = events[0]
+                    const { target, isIntersecting } = events[0]
                     if (isIntersecting && !this.inViewPort) {
                         this.inViewPort = true
                         this.observer.unobserve(target)
@@ -295,7 +303,7 @@ export default {
             window.addEventListener('resize', this.setWidth)
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (this.observer) {
             this.observer.disconnect()
         }
