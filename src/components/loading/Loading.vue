@@ -3,8 +3,9 @@
         <div
             class="loading-overlay is-active"
             :class="{ 'is-full-page': displayInFullPage }"
-            v-if="isActive">
-            <div class="loading-background" @click="cancel"/>
+            v-if="isActive"
+        >
+            <div class="loading-background" @click="cancel" />
             <slot>
                 <div class="loading-icon" />
             </slot>
@@ -18,13 +19,8 @@ import { HTMLElement } from '../../utils/ssr'
 
 export default {
     name: 'BLoading',
-    // deprecated, to replace with default 'value' in the next breaking change
-    model: {
-        prop: 'active',
-        event: 'update:active'
-    },
     props: {
-        active: Boolean,
+        modelValue: Boolean,
         programmatic: Boolean,
         container: [Object, Function, HTMLElement],
         isFullPage: {
@@ -44,14 +40,15 @@ export default {
             default: () => {}
         }
     },
+    emits: ['close', 'update:is-full-page', 'update:modelValue'],
     data() {
         return {
-            isActive: this.active || false,
+            isActive: this.modelValue || false,
             displayInFullPage: this.isFullPage
         }
     },
     watch: {
-        active(value) {
+        modelValue(value) {
             this.isActive = value
         },
         isFullPage(value) {
@@ -73,13 +70,14 @@ export default {
         close() {
             this.onCancel.apply(null, arguments)
             this.$emit('close')
-            this.$emit('update:active', false)
+            this.$emit('update:modelValue', false)
 
             // Timeout for the animation complete before destroying
             if (this.programmatic) {
                 this.isActive = false
+                // TODO: should the following happen outside this component;
+                // i.e., in index.js?
                 setTimeout(() => {
-                    this.$destroy()
                     removeElement(this.$el)
                 }, 150)
             }
@@ -96,9 +94,11 @@ export default {
             document.addEventListener('keyup', this.keyPress)
         }
     },
-    beforeMount() {
+    mounted() {
         // Insert the Loading component in body tag
         // only if it's programmatic
+        // (moved from beforeMount because $el is not bound during beforeMount)
+        // TODO: should this happen outside this component; i.e., in index.js?
         if (this.programmatic) {
             if (!this.container) {
                 document.body.appendChild(this.$el)
@@ -107,12 +107,10 @@ export default {
                 this.$emit('update:is-full-page', false)
                 this.container.appendChild(this.$el)
             }
+            this.isActive = true
         }
     },
-    mounted() {
-        if (this.programmatic) this.isActive = true
-    },
-    beforeDestroy() {
+    beforeUnmount() {
         if (typeof window !== 'undefined') {
             document.removeEventListener('keyup', this.keyPress)
         }
