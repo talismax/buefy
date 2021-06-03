@@ -4,13 +4,8 @@ export default {
     components: {
         [Icon.name]: Icon
     },
-    // deprecated, to replace with default 'value' in the next breaking change
-    model: {
-        prop: 'active',
-        event: 'update:active'
-    },
     props: {
-        active: {
+        modelValue: {
             type: Boolean,
             default: true
         },
@@ -35,13 +30,14 @@ export default {
             default: 2000
         }
     },
+    emits: ['close', 'update:modelValue'],
     data() {
         return {
-            isActive: this.active
+            isActive: this.modelValue
         }
     },
     watch: {
-        active(value) {
+        modelValue(value) {
             this.isActive = value
         },
         isActive(value) {
@@ -83,7 +79,7 @@ export default {
         close() {
             this.isActive = false
             this.$emit('close')
-            this.$emit('update:active', false)
+            this.$emit('update:modelValue', false)
         },
         /**
          * Set timer to auto close message
