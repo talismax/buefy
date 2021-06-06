@@ -5,11 +5,11 @@
         :class="{ 'is-active': isOpened }"
         aria-label="menu"
         :aria-expanded="isOpened"
-        v-on="$listeners"
+        v-bind="$attrs"
     >
-        <span aria-hidden="true"/>
-        <span aria-hidden="true"/>
-        <span aria-hidden="true"/>
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
     </a>
 </template>
 
