@@ -21,7 +21,7 @@
 
          <Example title="From outside Vue instance">
             <p>You can use it on Vuex or VueRouter using this syntax:</p>
-            <CodeView lang="javascript" :code="outsideVueInstance | pre" expanded/>
+            <CodeView lang="javascript" :code="preformat(outsideVueInstance)" expanded/>
         </Example>
 
         <ApiView :data="api"/>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+    import { preformat as _preformat } from '@/utils'
+
     import api from './api/notification'
     import variables from './variables/notification'
 
@@ -68,6 +70,11 @@
                     import { NotificationProgrammatic as Notification } from 'buefy'
                     Notification.open('Notify!')
                 `
+            }
+        },
+        methods: {
+            preformat(text) {
+                return _preformat(text)
             }
         }
     }
