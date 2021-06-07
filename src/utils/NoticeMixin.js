@@ -33,6 +33,7 @@ export default {
         },
         container: String
     },
+    emits: ['close'],
     data() {
         return {
             isActive: false,
