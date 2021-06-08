@@ -12,13 +12,14 @@
                     :per-page="perPage"
                     :simple="paginationSimple"
                     :size="paginationSize"
-                    :current="newCurrentPage"
+                    :model-value="newCurrentPage"
                     :rounded="rounded"
                     @change="pageChanged"
                     :aria-next-label="ariaNextLabel"
                     :aria-previous-label="ariaPreviousLabel"
                     :aria-page-label="ariaPageLabel"
-                    :aria-current-label="ariaCurrentLabel" />
+                    :aria-current-label="ariaCurrentLabel"
+                />
             </div>
         </div>
     </div>
@@ -46,6 +47,7 @@ export default {
         ariaPageLabel: String,
         ariaCurrentLabel: String
     },
+    emits: ['page-change', 'update:currentPage'],
     data() {
         return {
             newCurrentPage: this.currentPage
