@@ -7,7 +7,7 @@
                 :expand-on-hover="expandOnHover"
                 :reduce="reduce"
                 type="is-light"
-                open
+                :modelValue="true"
             >
                 <div class="p-1">
                     <div class="block">
