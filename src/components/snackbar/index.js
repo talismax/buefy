@@ -1,14 +1,13 @@
+import { createApp, h as createElement } from 'vue'
+
 import Snackbar from './Snackbar'
 
-import config, { VueInstance } from '../../utils/config'
+import config from '../../utils/config'
 import { merge } from '../../utils/helpers'
 import { use, registerComponentProgrammatic } from '../../utils/plugins'
 
-let localVueInstance
-
 const SnackbarProgrammatic = {
     open(params) {
-        let parent
         if (typeof params === 'string') {
             params = {
                 message: params
@@ -20,7 +19,6 @@ const SnackbarProgrammatic = {
             position: config.defaultSnackbarPosition || 'is-bottom-right'
         }
         if (params.parent) {
-            parent = params.parent
             delete params.parent
         }
         let slot
@@ -29,24 +27,48 @@ const SnackbarProgrammatic = {
             delete params.message
         }
         const propsData = merge(defaultParam, params)
-        const vm = typeof window !== 'undefined' && window.Vue ? window.Vue : localVueInstance || VueInstance
-        const SnackbarComponent = vm.extend(Snackbar)
-        const component = new SnackbarComponent({
-            parent,
-            el: document.createElement('div'),
-            propsData
+        const container = document.createElement('div')
+        const vueInstance = createApp({
+            data() {
+                return {
+                    snackbarVNode: null
+                }
+            },
+            methods: {
+                close() {
+                    const snackbar =
+                        this.snackbarVNode.component?.exposed ||
+                        this.snackbarVNode.component?.proxy
+                    snackbar?.close()
+                }
+            },
+            render() {
+                this.snackbarVNode = createElement(
+                    Snackbar,
+                    {
+                        ...propsData,
+                        onClose() {
+                            if (typeof propsData.onClose === 'function') {
+                                propsData.onClose()
+                            }
+                            // timeout for the animation complete
+                            // before unmounting
+                            setTimeout(() => {
+                                vueInstance.unmount()
+                            }, 150)
+                        }
+                    },
+                    slot != null ? { default: () => slot } : undefined
+                )
+                return this.snackbarVNode
+            }
         })
-        if (slot) {
-            component.$slots.default = slot
-            component.$forceUpdate()
-        }
-        return component
+        return vueInstance.mount(container)
     }
 }
 
 const Plugin = {
     install(Vue) {
-        localVueInstance = Vue
         registerComponentProgrammatic(Vue, 'snackbar', SnackbarProgrammatic)
     }
 }
