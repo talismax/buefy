@@ -4,7 +4,8 @@
             <div
                 v-show="active && (isActive || always)"
                 ref="content"
-                :class="['tooltip-content', contentClass]">
+                :class="['tooltip-content', contentClass]"
+            >
                 <template v-if="label">{{ label }}</template>
                 <template v-else-if="$slots.content">
                     <slot name="content" />
@@ -20,7 +21,8 @@
             @mouseenter="onHover"
             @focus.capture="onFocus"
             @blur.capture="close"
-            @mouseleave="close">
+            @mouseleave="close"
+        >
             <slot ref="slot" />
         </div>
     </span>
@@ -126,7 +128,7 @@ export default {
                 }
                 this.rootClasses.forEach((item) => {
                     if (typeof item === 'object') {
-                        for (let key in item) {
+                        for (const key in item) {
                             if (item[key]) {
                                 tooltipEl.classList.add(key)
                             }
@@ -138,8 +140,8 @@ export default {
                 tooltipEl.style.width = `${trigger.clientWidth}px`
                 tooltipEl.style.height = `${trigger.clientHeight}px`
                 const rect = trigger.getBoundingClientRect()
-                let top = rect.top + window.scrollY
-                let left = rect.left + window.scrollX
+                const top = rect.top + window.scrollY
+                const left = rect.left + window.scrollX
                 const wrapper = this.$data._bodyEl
                 wrapper.style.position = 'absolute'
                 wrapper.style.top = `${top}px`
@@ -242,7 +244,7 @@ export default {
             document.addEventListener('keyup', this.keyPress)
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (typeof window !== 'undefined') {
             document.removeEventListener('click', this.clickedOutside)
             document.removeEventListener('keyup', this.keyPress)
