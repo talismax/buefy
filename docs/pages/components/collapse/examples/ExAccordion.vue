@@ -6,7 +6,7 @@
             animation="slide"
             v-for="(collapse, index) of collapses"
             :key="index"
-            :open="isOpen == index"
+            :model-value="isOpen == index"
             @open="isOpen = index">
             <template #trigger="props">
                 <div
