@@ -168,6 +168,7 @@ export default {
         },
         ariaModal: Boolean
     },
+    emits: ['confirm'],
     data() {
         const prompt = this.hasInput
             ? this.inputAttrs.value || ''
