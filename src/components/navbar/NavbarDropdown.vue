@@ -17,7 +17,8 @@
             role="menuitem"
             aria-haspopup="true"
             href="#"
-            @click.prevent="newActive = !newActive">
+            @click.prevent="newActive = !newActive"
+        >
             <template v-if="label">{{ label }}</template>
             <slot v-else name="label" />
         </a>
