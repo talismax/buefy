@@ -3,7 +3,8 @@
         <article
             v-show="isActive"
             class="notification"
-            :class="[type, position]">
+            :class="[type, position]"
+        >
             <button
                 v-if="closable"
                 class="delete"
@@ -18,7 +19,8 @@
                         :pack="iconPack"
                         both
                         size="is-large"
-                        aria-hidden/>
+                        aria-hidden
+                    />
                 </div>
                 <div class="media-content">
                     <template v-if="$slots.default">
