@@ -466,7 +466,8 @@ export default {
         'change-year',
         'range-end',
         'range-start',
-        'update:modelValue'
+        'update:modelValue',
+        'week-number-click' // emitted from `DatepickerTableRow`
     ],
     data() {
         const focusedDate = (Array.isArray(this.modelValue)
