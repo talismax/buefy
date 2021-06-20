@@ -580,6 +580,35 @@ export default {
         },
         debounceSearch: Number
     },
+    emits: [
+        'cellclick',
+        'check',
+        'check-all',
+        'click',
+        'columndragend',
+        'columndragleave',
+        'columndragover',
+        'columndragstart',
+        'columndrop',
+        'contextmenu',
+        'dblclick',
+        'details-close',
+        'details-open',
+        'dragend',
+        'dragleave',
+        'dragover',
+        'dragstart',
+        'drop',
+        'filters-change',
+        'page-change',
+        'select',
+        'sort',
+        'sorting-priority-removed',
+        'update:checkedRows',
+        'update:currentPage',
+        'update:openedDetailed',
+        'update:selected'
+    ],
     data() {
         return {
             sortMultipleDataLocal: [],
@@ -1345,6 +1374,8 @@ export default {
         },
 
         emitEventForRow(eventName, event, row) {
+            // eventName should not be in `emits` because it is never included
+            // in `$attrs` if it is listed in `emits`.
             return this.$attrs[`on${eventName}`] ? this.$emit(eventName, row, event) : null
         },
 
