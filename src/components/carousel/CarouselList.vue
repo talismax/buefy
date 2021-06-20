@@ -3,11 +3,13 @@
         class="carousel-list"
         :class="{'has-shadow': scrollIndex > 0}"
         @mousedown.prevent="dragStart"
-        @touchstart="dragStart">
+        @touchstart="dragStart"
+    >
         <div
             class="carousel-slides"
             :class="listClass"
-            :style="'transform:translateX('+translation+'px)'">
+            :style="'transform:translateX('+translation+'px)'"
+        >
             <div
                 v-for="(list, index) in data"
                 class="carousel-slide"
@@ -15,14 +17,16 @@
                 @mouseup="checkAsIndicator(index, $event)"
                 @touchend="checkAsIndicator(index, $event)"
                 :key="index"
-                :style="itemStyle">
+                :style="itemStyle"
+            >
                 <slot
                     :index="index"
                     :active="activeItem"
                     :scroll="scrollIndex"
                     v-bind="list"
                     :list="list"
-                    name="item">
+                    name="item"
+                >
                     <b-image
                         :src="list.image"
                         v-bind="list"
@@ -33,29 +37,32 @@
         <div
             v-if="arrow"
             class="carousel-arrow"
-            :class="{'is-hovered': settings.arrowHover}">
+            :class="{'is-hovered': settings.arrowHover}"
+        >
             <b-icon
                 v-show="hasPrev"
                 class="has-icons-left"
-                @click.native.prevent="prev"
+                @click.prevent="prev"
                 :pack="settings.iconPack"
                 :icon="settings.iconPrev"
                 :size="settings.iconSize"
-                both />
+                both
+            />
             <b-icon
                 v-show="hasNext"
                 class="has-icons-right"
-                @click.native.prevent="next"
+                @click.prevent="next"
                 :pack="settings.iconPack"
                 :icon="settings.iconNext"
                 :size="settings.iconSize"
-                both />
+                both
+            />
         </div>
     </div>
 </template>
 
 <script>
-import {sign, mod, bound} from '../../utils/helpers'
+import { sign, mod, bound } from '../../utils/helpers'
 import config from '../../utils/config'
 
 import Icon from '../icon/Icon'
@@ -70,7 +77,7 @@ export default {
             type: Array,
             default: () => []
         },
-        value: {
+        modelValue: {
             type: Number,
             default: 0
         },
@@ -121,10 +128,11 @@ export default {
             default: () => ({})
         }
     },
+    emits: ['switch', 'update:modelValue', 'updated:scroll'],
     data() {
         return {
-            activeItem: this.value,
-            scrollIndex: this.asIndicator ? this.scrollValue : this.value,
+            activeItem: this.modelValue,
+            scrollIndex: this.asIndicator ? this.scrollValue : this.modelValue,
             delta: 0,
             dragX: false,
             hold: 0,
@@ -169,13 +177,14 @@ export default {
             return Object.keys(this.breakpoints).sort((a, b) => b - a)
         },
         settings() {
-            let breakpoint = this.breakpointKeys.filter((breakpoint) => {
+            const breakpoint = this.breakpointKeys.filter((breakpoint) => {
                 if (this.windowWidth >= breakpoint) {
                     return true
                 }
+                return false
             })[0]
             if (breakpoint) {
-                return {...this.$props, ...this.breakpoints[breakpoint]}
+                return { ...this.$props, ...this.breakpoints[breakpoint] }
             }
             return this.$props
         },
@@ -194,7 +203,7 @@ export default {
         /**
          * When v-model is changed set the new active item.
          */
-        value(value) {
+        modelValue(value) {
             this.switchTo(this.asIndicator ? value - (this.itemsToShow - 3) / 2 : value)
             if (this.activeItem !== value) {
                 this.activeItem = bound(value, 0, this.data.length - 1)
@@ -216,8 +225,8 @@ export default {
             }
             newIndex = bound(newIndex, 0, this.total)
             this.scrollIndex = newIndex
-            if (!this.asIndicator && this.value !== newIndex) {
-                this.$emit('input', newIndex)
+            if (!this.asIndicator && this.modelValue !== newIndex) {
+                this.$emit('update:modelValue', newIndex)
             } else if (this.scrollIndex !== newIndex) {
                 this.$emit('updated:scroll', newIndex)
             }
@@ -255,7 +264,8 @@ export default {
         dragMove(event) {
             if (!this.dragging) return
             const dragEndX = event.touches
-                ? (event.changedTouches[0] || event.touches[0]).clientX : event.clientX
+                ? (event.changedTouches[0] || event.touches[0]).clientX
+                : event.clientX
             this.delta = this.dragX - dragEndX
             if (!event.touches) {
                 event.preventDefault()
@@ -295,7 +305,7 @@ export default {
             throw new Error('The config prop was removed, you need to use v-bind instead')
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         if (typeof window !== 'undefined') {
             if (window.ResizeObserver) {
                 this.observer.disconnect()
