@@ -20,9 +20,9 @@ export default {
             script.setAttribute('type', 'text/javascript')
             script.setAttribute(
                 'src',
-                `//cdn.carbonads.com/carbon.js?serve=CE7DE23W&placement=buefyorg`
+                '//cdn.carbonads.com/carbon.js?serve=CE7DE23W&placement=buefyorg'
             )
-            script.setAttribute('id', `_carbonads_js`)
+            script.setAttribute('id', '_carbonads_js')
             this.$refs.carbonads.appendChild(script)
         }
     }
