@@ -13,6 +13,33 @@
 
 > Buefy is a lightweight library of responsive UI components for [Vue.js](https://vuejs.org/) based on [Bulma](http://bulma.io/) framework and design.
 
+## About this fork
+
+This fork (branch `vue-3`) is a version of Buefy that works with [Vue 3](https://v3.vuejs.org) (not with Vue 2).
+The branch `vue-3` has deviated from the then latest stable version `0.9.7`.
+
+### Migration goal
+
+The migration goal was to make the documentation page of every component work.
+Some features not used in the documentation pages may not work.
+Please refer to [MIGRATION-NOTE.md](./MIGRATION-NOTE.md) for more details about what challenges I faced.
+
+**Unit tests have not been touched at all**.
+
+### Breaking changes
+
+Because not all of Vue 2 features could be reproduced with Vue 3, there are some breaking changes.
+Please refer to [CHANGELOG.md](./CHANGELOG.md) for more details.
+The biggest breaking change is obviously, **this does not work with Vue 2**.
+
+### How to install
+
+To install this fork, please run the following command,
+
+```sh
+npm install 'git+https://github.com/kikuomax/buefy.git'
+```
+
 ## Features
 
 * Keep your current Bulma theme / variables easily
@@ -43,22 +70,26 @@ npm install buefy
 
 Bundle
 ```javascript
-import Vue from 'vue';
+import { createApp } from 'vue';
 import Buefy from 'buefy';
 import 'buefy/dist/buefy.css';
 
-Vue.use(Buefy);
+const app = createApp();
+
+app.use(Buefy);
 
 ```
 or Individual Components
 ```javascript
 
-import Vue from 'vue'
+import { createApp } from 'vue'
 import { Field, Input } from 'buefy'
 import 'buefy/dist/buefy.css'
 
-Vue.use(Field)
-Vue.use(Input)
+const app = createApp();
+
+app.use(Field)
+app.use(Input)
 
 ```
 

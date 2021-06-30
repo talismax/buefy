@@ -1,5 +1,74 @@
 # Buefy Changelog
 
+## 0.9.7-vue3-1
+
+### Breaking changes
+
+* **Vue.js** 3.0+ is now the minimum required version
+* `v-model` binding of the following components conform to Vue 3. See also [MIGRATION-NOTE.md](./MIGRATION-NOTE.md#v-model-binding).
+    * `Autocomplete` (#152319a736aae1b57a4750de0be7d88fa0f8a90a)
+    * `Carousel` (#3d1d83455cf7ca2f5d66d3f761791d03978ade7b)
+    * `CarouselList` (#7dfa0c48a73128007099ac52b80e5382f41048d6)
+    * `Checkbox` (`CheckRadioMixin`) (#4df7bec9d43b0ac7f93378fa5871005926ee9d45)
+    * `Clockpicker` (`TimepickerMixin`) (#c261015266e4ea876fe6e68bb6cbe541e8739bce)
+    * `Collapse` used to have a custom binding to `open` (#6baf1b31c94a7d31491fdd97802bcfc11632d4ff)
+    * `Datepicker` (#82d9eeb96415e979efe888e427bcda469f861b19)
+    * `Datetimepicker` (#3f2c959350afe493cf1d27d97b56781a399f40f9)
+    * `Dropdown` (#74256c985c72113834b88a070a7f7d3212518020)
+    * `Input` (#566be6bc36529e33bd28c7286244bde80680454a)
+    * `Loading` used to have a custom binding to `active` (#65cd34ce9a7e24e6ceadfae4241d1f965bf5ce3f)
+    * `Message` (`MessageMixin`) used to have a custom binding to `active` (#9830fdf2c64222e3327bbc45f731a56f138ce4f3)
+    * `Modal` used to have a custom binding to `active` (#994da8e04b32fc2d2f75a1724903d64fdf206498)
+    * `Navbar` used to have a custom binding to `active` (#9ca33f44ebd180832aa98ec2245ebfb805f1fbd2)
+    * `Numberinput` (#352f74b37c040c66edc0df4bd89dc8924e2ccb53)
+    * `Pagination` used to have a custom binding to `current` (#632a6cd101cc195c6dc56ccf0b7748eb18fb6462)
+    * `Rate` (#d785813a47eb0caf342ac4eff44b6d20166e5091)
+    * `Select` (#8b283d36ee1f4b61c05880fa985ca49a4acc85c0)
+    * `Sidebar` used to have a custom binding to `open` (#0b98b87a5aaca8d1a129422fec4228c119260891)
+    * `Slider` (#74256c985c72113834b88a070a7f7d3212518020)
+    * `Steps` (`TabbedMixin`) (#429b3fd6c205b2e8541aae0becd32e2b9a272857)
+    * `Switch` (#a8d472364990710ad53cb8ddf0b05959aa43fb91)
+    * `Tabs` (`TabbedMixin`) (#f96494a54f21da16e1698d51e0a39c203b87fb89)
+    * `Taginput` (#447d2b3a6e6259c67b6949625271eea6ccb9ac98)
+    * `Upload` (#c39b77f708d360eed1f802440aae3f9d2cc79e81)
+* Brand-new app is created to programmatically mount the following components.
+  Plugins including Buefy itself cannot be used in a programmatically mounted component.
+  See also [MIGRATION-NOTE.md](./MIGRATION-NOTE.md#component-alone-cannot-mount-itself).
+    * `Dialog` (#1a6784c3b5d1faa9f41d0d3cffe53604b15bda92)
+    * `Loading` (#65cd34ce9a7e24e6ceadfae4241d1f965bf5ce3f)
+    * `Modal` (#994da8e04b32fc2d2f75a1724903d64fdf206498)
+    * `Notification` (#38393d9c5e28e036d137614c4e3caf731eaa1a22)
+    * `Snackbar` (#976ae06041630a82a1e528d18298cf0b0ad805e9)
+    * `Toast` (#fa648ad4af2cdda915cf72cc0f7e9da67efac37d)
+* The `onConfirm` prop of `Dialog` is renamed to `confirmCallback` because it conflicts with a listener for `confirm` events. (#1a6784c3b5d1faa9f41d0d3cffe53604b15bda92)
+* The `onCancel` prop of `Modal`, and `Dialog` is renamed to `cancelCallback` because it conflicts with a listener for `cancel` events. (#1a6784c3b5d1faa9f41d0d3cffe53604b15bda92)
+* Indexing of `StepItem`, and `CarouselItem` is changed.
+  Indexes in the default slot are no longer respected.
+  They are indexed in the order of creation instead.
+  You have to specify the `order` prop to keep the ordering of items.
+  See also [MIGRATION-NOTE.md](./MIGRATION-NOTE.md#component-cannot-be-obtained-from-a-slot).
+  (#429b3fd6c205b2e8541aae0becd32e2b9a272857)
+
+### Fixes
+
+* Helper computed values of boolean attributes are introduced because setting a boolean attribute to `false` no longer removes the attribute on Vue 3.
+    * #a8d472364990710ad53cb8ddf0b05959aa43fb91
+    * #4df7bec9d43b0ac7f93378fa5871005926ee9d45
+    * #48ba14683c435e89fd6594c0a5367448733b7af7
+    * #4b39edf02119fa0d30495688fb04bce84c909d80
+    * #447d2b3a6e6259c67b6949625271eea6ccb9ac98
+    * #c261015266e4ea876fe6e68bb6cbe541e8739bce
+    * #82d9eeb96415e979efe888e427bcda469f861b19
+    * #3f2c959350afe493cf1d27d97b56781a399f40f9
+    * #352f74b37c040c66edc0df4bd89dc8924e2ccb53
+    * #1159db4b2150992fb33c6c4a761f8bbb1c672ef2
+    * #48498f7d46fc513c9df240cb24b1443d49073c8b
+    * #c39b77f708d360eed1f802440aae3f9d2cc79e81
+    * #429b3fd6c205b2e8541aae0becd32e2b9a272857
+    * #077bf19daae500493bd285e4ddc7184b8940ed24
+* A lot of ESLint errors, and warnings are fixed, as the ESLint rule version has been upgraded.
+* The type of the `cancelText` prop of `Snackbar` is fixed. It used to be `String | null`, and ended up with a type error. It is now `String`.
+
 ## 0.9.7
 
 ### New features
